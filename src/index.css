@@ -4,11 +4,14 @@
   padding: 0;
 }
 
-.App {
-  height: 100vh;
+/* ********** Player ********** */
+
+.main-container {
+  height: 80vh;
   width: 100vw;
   display: flex;
-
+  flex-direction: column;
+  justify-content: center;
 }
 
 .player-header {
@@ -16,13 +19,143 @@
   font-family: 'Otomanopee One';  
 }
 
-.ui.header{
+.player-header .ui.header{
   text-shadow: 1px 1px #808080;
 }
 
 .player-container {
   box-shadow: 1px 3px 3px 2px #808080;
+  width: 60vw;
+  margin: auto;
+  padding: 20px 25px;
+  border-radius: 10px;
+}
+
+.teamsetup-container {
+  box-shadow: 1px 3px 3px 2px #808080;
   width: 80%;
   margin: auto;
   padding: 20px 25px;
+  border-radius: 10px;
+}
+
+.confirm-modal.ui.modal>.content  {
+  min-height: 50vh;
+}
+
+/* .ui.form .field{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center
+} */
+
+/* .ui.form input {
+  width: 80vw;
+} */
+
+.teamsetup-container .empty-list {
+  color: red;
+}
+
+
+/* ************* Navigation *********** */
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 100px;
+}
+
+.nav-logo {
+  width: 80px;
+  height: 80px;
+}
+
+.nav-logo img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.nav-link{
+  color: #000;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 0px 30px
+}
+
+/* ************ Over ****************** */
+.over-container {
+  width: 80%;
+  min-height: 70%;
+  margin: auto;
+  box-shadow: 1px 3px 3px 2px #808080;
+  border-radius: 10px;
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.over-container .ui.label:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+.score-main {
+  padding: 10px 0px;
+}
+
+.score-sub {
+  align-items: center;
+}
+
+.teamPlayers-container {
+  width: 100%;
+  min-height: 50%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.ui.button.fluid.dropdown {
+  width: 30vw;
+}
+
+.bat-container {
+  padding-bottom: 15px;
+}
+
+.player-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  /* padding-bottom: 5px; */
+}
+
+.over-ball-container {
+  display: flex;
+  min-height: 40%;
+}
+
+.over-display {
+  margin-top: 15px;
+}
+
+/* ************ BallButton ************* */
+
+
+.over-ball{
+  display: flex;
+  padding: 0px 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.over-ball h2{
+  margin-top: 0;
+}
+
+.over-ball:hover{
+  transform: scale(1.5);
 }

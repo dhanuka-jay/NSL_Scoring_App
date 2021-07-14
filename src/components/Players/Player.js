@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {v4 as uuidv4} from 'uuid';
 import { Header, Form, Button } from "semantic-ui-react";
 
 const Player = ({addNewPlayer}) => {
@@ -6,7 +7,14 @@ const Player = ({addNewPlayer}) => {
     const [playerLName, setPlayerLName] = useState('');
 
     const addPlayer = () => {
-        addNewPlayer({playerFName: playerFName, playerLName: playerLName});
+        addNewPlayer(
+            {
+                playerID: uuidv4(), 
+                playerFName: playerFName, 
+                playerLName: playerLName,
+                batStat: 'NYB'
+            }
+        );
         clearFields();
     }
 
@@ -22,12 +30,14 @@ const Player = ({addNewPlayer}) => {
             </div>
             <Form>
                 <Form.Field>
-                    <label>First Name</label>
-                    <input 
-                        placeholder='First Name' 
-                        value={playerFName}
-                        onChange={(e) => setPlayerFName(e.target.value)}
-                    />
+                    <div className="field-container">
+                        <label>First Name</label>
+                        <input 
+                            placeholder='First Name' 
+                            value={playerFName}
+                            onChange={(e) => setPlayerFName(e.target.value)}
+                        />
+                    </div>
                 </Form.Field>
                 <Form.Field>
                     <label>Last Name</label>
