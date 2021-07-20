@@ -2,12 +2,14 @@ import { Form, Button, Modal, Header, Icon, List, Segment, Dropdown } from "sema
 import { useState } from "react";
 import TeamMember from "../TeamMember";
 
-const TeamSetup = ({playerList, addToTeam, teamA, teamB, setTeamName, removeFromList, totOvers, setTotOvers}) => {
+const TeamSetup = ({playerList, addToTeam, teamA, teamB, setTeamName, removeFromList, totOvers, setTotOvers, setBattingTeam}) => {
     const [numOfPlayers, setNumOfPlayers] = useState(6);
     const [teamAName, setTeamAName] = useState('Sudeera');
     const [teamBName, setTeamBName] = useState('Punya');
+    const [batTeam, setBatTeam] = useState('');
     const [isTeamA, setIsTeamA] = useState(false);
     const [isTeamB, setIsTeamB] = useState(false);  
+    const [isToss, setIsToss] = useState(false);
     const [overs, setOvers] = useState();
     
 
@@ -29,15 +31,37 @@ const TeamSetup = ({playerList, addToTeam, teamA, teamB, setTeamName, removeFrom
         {key: 50, text: '50', value: 50}
     ]
 
+    const batTeamOptions = [
+        {key: 1, text: `Team ${teamA.teamName}`, value: 'A'},
+        {key: 2, text: `Team ${teamB.teamName}`, value: 'B'}
+    ]
+
 
     //Makes a option array from the 'PlayerList' for the dropdown while exluding already added players
     const availablePlayers = () => {
-        let plyrOptions = playerList.filter( player => !teamA.players.includes(player.playerID))
-            .filter (player => !teamB.players.includes(player.playerID))
+        let plyrOptions = playerList.filter( player =>  !teamA.players.includes(player) )
+            .filter (player =>  !teamB.players.includes(player))
             .map((player) =>
              ({key: player.playerID, text: `${player.playerFName} ${player.playerLName}`, value: player.playerID})
         )
         return plyrOptions;
+        // teamA.players.map( (player, idx) => {
+        //     console.log(player.playerID, idx)
+        // })
+
+        // let plyrOptions;
+        // teamA.players.length > 0 ?
+        // plyrOptions = playerList.filter(player => !teamA.players.includes(player))
+        //     .map((player) =>
+        //      ({key: player.playerID, text: `${player.playerFName} ${player.playerLName}`, value: player.playerID})
+        // )
+        // :
+        // plyrOptions = playerList
+        // .map((player) =>
+        //      ({key: player.playerID, text: `${player.playerFName} ${player.playerLName}`, value: player.playerID})
+        // )
+        // return plyrOptions;
+
     }
 
     return (
@@ -59,7 +83,7 @@ const TeamSetup = ({playerList, addToTeam, teamA, teamB, setTeamName, removeFrom
                 <Form.Field>
                     <label>Team 1 - Name</label>
                     <input 
-                        placeholder='Give Team 1 a Name here.' 
+                        placeholder='Team 1 Name' 
                         value={teamAName}
                         onChange={(e) => setTeamAName(e.target.value)}
                     />
@@ -67,7 +91,7 @@ const TeamSetup = ({playerList, addToTeam, teamA, teamB, setTeamName, removeFrom
                 <Form.Field>
                     <label>Team 2 - Name</label>
                     <input 
-                        placeholder='Give Team 2 a Name here' 
+                        placeholder='Team 2 Name' 
                         value={teamBName}
                         onChange={(e) => setTeamBName(e.target.value)}
                     />
@@ -83,7 +107,7 @@ const TeamSetup = ({playerList, addToTeam, teamA, teamB, setTeamName, removeFrom
                         />
                 </Form.Field>           
                 <Button 
-                    content="Create Teams" 
+                    content="Create/Edit Teams" 
                     icon="group" 
                     labelPosition="right"
                     color="green"
@@ -202,8 +226,54 @@ const TeamSetup = ({playerList, addToTeam, teamA, teamB, setTeamName, removeFrom
                     }>
                         <Icon name='remove' /> Go Back to Team {teamAName}
                     </Button>
-                    <Button color='green'>
-                    <Icon name='checkmark' /> Yes
+                    <Button 
+                        color='green'
+                        onClick={() => {
+                            setIsTeamB(false)
+                            setIsToss(true)                        
+                        }}
+                    >
+                    <Icon name='checkmark' /> Move to Toss
+                    </Button>
+                </Modal.Actions>
+            </Modal>
+
+            <Modal
+                className="confirm-modal"
+                open={isToss}
+                closeOnEscape={false}
+                closeOnDimmerClick={false}
+                size='tiny'
+                >
+                <Modal.Header>Choose Batting Side</Modal.Header>
+                <Modal.Content>
+                    <Segment>
+                                <Dropdown
+                                    fluid
+                                    placeholder="Select Batting Side"
+                                    options={batTeamOptions}
+                                    value={batTeam}
+                                    onChange={(e, {value}) => {
+                                        setBatTeam(value)
+                                        setBattingTeam(value)                                        
+                                    }}
+                                />
+                    </Segment>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button color='black'   
+                        onClick={() => {
+                            setIsToss(false);
+                            setIsTeamB(true)
+                        }
+                    }>
+                        <Icon name='remove' /> Go Back to Teams {teamAName}
+                    </Button>
+                    <Button 
+                        color='green'
+                        onClick={() => setIsToss(false)}
+                    >
+                    <Icon name='checkmark' /> Start Game
                     </Button>
                 </Modal.Actions>
             </Modal>

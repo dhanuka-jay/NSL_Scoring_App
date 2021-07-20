@@ -1,8 +1,81 @@
+:root{
+  --main-border : #e8491d 10px solid;
+  --liner-border : linear-gradient(to right, #35424a, #e8491d) no-repeat 0 0 / cover;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
+
+/* ********** Home ************ */
+
+.main-border{
+  height: 2px;
+  background: var(--liner-border);
+}
+
+#showcase{
+  background: url("/src/photo_1.jpg") no-repeat fixed center center;
+  background-size: cover; /* stretches the image to fit in the container */
+  box-shadow:inset 0 0 0 2000px rgba(0, 0, 0, 0.4); /* add an overlay shadow to the image */
+  color: #ffffff;
+}
+
+#showcase .container{
+  min-height: 45vh;
+  padding: 0px 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#showcase h2 {
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+
+#showcase h1{
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+
+#showcase p{
+  font-size: 20px;
+}
+
+#newsletter{
+  color: #ffffff;
+  background: linear-gradient(to right, #74240e, #35424a) no-repeat 0 0 / cover;
+}
+
+#newsletter .container{
+  min-height: 10vh;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+#newsletter .container h1{
+  flex-basis: 50%;
+}
+
+#newsletter .container form{
+  flex-basis: 50%;
+  display: flex;
+}
+
+#newsletter input[type="email"]{
+  padding: 5px 15px 5px 15px;
+  width: 250px;
+  height: 30px;
+  margin-right: 3px;
+}
+
+
 
 /* ********** Player ********** */
 
@@ -11,7 +84,6 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
 .player-header {
@@ -64,12 +136,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 100px;
+  padding: 5px 100px;
+  background: linear-gradient(to right , #e8491d, #750000) no-repeat 0 0 / cover;
+  color: #ffffff;
 }
 
 .nav-logo {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
 }
 
 .nav-logo img {
@@ -78,11 +152,12 @@
 }
 
 .nav-link{
-  color: #000;
+  color: #fff;
   font-size: 1.5rem;
   font-weight: bold;
   padding: 0px 30px
 }
+
 
 /* ************ Over ****************** */
 .over-container {
@@ -101,6 +176,10 @@
 .over-container .ui.label:hover {
   cursor: pointer;
   transform: scale(1.1);
+}
+
+.over-container .ui.modal>.header {
+  text-align: center;
 }
 
 .score-main {
@@ -158,4 +237,27 @@
 
 .over-ball:hover{
   transform: scale(1.5);
+}
+
+
+/* ********** Charts ********** */
+.chart-container {
+  height: 80vh;
+}
+
+.bowling-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bowler-stat canvas{
+  height: 30vh;
+  margin: 50px 30px;
+}
+
+.batting-stats canvas{
+  width: 80vw;
+  height: 40vh;
+  margin: auto;
 }
