@@ -11,21 +11,21 @@ import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [clubPlayers, setClubPlayers] = useState([
-    {playerID: uuidv4(), playerFName: 'Sudeera', playerLName: 'Ilandarage', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Punya', playerLName: 'Abayawickrama', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Ranga', playerLName: 'Panagoda', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Casey', playerLName: 'De Silva', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Lahiru', playerLName: 'A', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Anjula', playerLName: 'Ranasinghe', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Saman', playerLName: 'Maharachchi', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Yehan', playerLName: 'Muthukuda', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Lalith', playerLName: 'Jayaweera', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Indika', playerLName: 'A', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Sinzer', playerLName: 'A', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Kapila', playerLName: 'Hapu', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Ruwan', playerLName: 'Weerasekara', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Duvindra', playerLName: 'M', batStat: 'NYB'},
-    {playerID: uuidv4(), playerFName: 'Lalantha', playerLName: 'A', batStat: 'NYB'},
+    {playerID: uuidv4(), playerFName: 'Sudeera', playerLName: 'Ilandarage'},
+    {playerID: uuidv4(), playerFName: 'Punya', playerLName: 'Abayawickrama'},
+    {playerID: uuidv4(), playerFName: 'Ranga', playerLName: 'Panagoda'},
+    {playerID: uuidv4(), playerFName: 'Casey', playerLName: 'De Silva'},
+    {playerID: uuidv4(), playerFName: 'Lahiru', playerLName: 'A'},
+    {playerID: uuidv4(), playerFName: 'Anjula', playerLName: 'Ranasinghe'},
+    {playerID: uuidv4(), playerFName: 'Saman', playerLName: 'Maharachchi'},
+    {playerID: uuidv4(), playerFName: 'Yehan', playerLName: 'Muthukuda'},
+    {playerID: uuidv4(), playerFName: 'Lalith', playerLName: 'Jayaweera'},
+    {playerID: uuidv4(), playerFName: 'Indika', playerLName: 'A'},
+    {playerID: uuidv4(), playerFName: 'Sinzer', playerLName: 'A'},
+    {playerID: uuidv4(), playerFName: 'Kapila', playerLName: 'Hapu'},
+    {playerID: uuidv4(), playerFName: 'Ruwan', playerLName: 'Weerasekara'},
+    {playerID: uuidv4(), playerFName: 'Duvindra', playerLName: 'M'},
+    {playerID: uuidv4(), playerFName: 'Lalantha', playerLName: 'A'},
   ]);
 
   //*** Empty out the arrays before LIVE */
@@ -58,7 +58,7 @@ function App() {
 
   const addToTeam = (team, selectedPlayer) => {
     const teamPlayer = clubPlayers.find(x => x.playerID === selectedPlayer);
-    //teamPlayer.batStat = 'NYB';
+    teamPlayer.batStat = 'NYB';
     //teamPlayer.score = 0;
 
     team ==='A' ?
@@ -86,7 +86,7 @@ function App() {
   }
 
   const setBattingTeam = (toss) => {
-    console.log(toss)
+    //console.log(toss)
     if(toss === 'A'){
       setTeamA( prevState => {
         return {...prevState, batting: true}
@@ -113,6 +113,34 @@ function App() {
     setTeamB( prevState => {
       return {...prevState, players: teamB.players.filter((player) => player.playerID !== id)}
     })
+  }
+
+
+
+  /*
+    f(): setPlayerOut() => To set Player's batStat to 'OUT'.
+    p: playerID
+*/
+  const setPlayerOut = (playerID) => {            
+      setTeamA( prevState => {
+        return {...prevState, players: teamA.players.map(player => 
+          player.playerID === playerID ? 
+            {...player, batStat: 'OUT'}
+            :
+            player )
+          }
+        }
+      )
+
+      setTeamB( prevState => {
+        return {...prevState, players: teamB.players.map(player => 
+          player.playerID === playerID ? 
+            {...player, batStat: 'OUT'}
+            :
+            player )
+          }
+        }
+      )
   }
 
   return (
@@ -150,7 +178,8 @@ function App() {
                 teamB={teamB}
                 overList={overList}
                 clubPlayers={clubPlayers}
-                setOverList={setOverList}              
+                setOverList={setOverList}   
+                setPlayerOut={setPlayerOut}           
               />
             </Route>
             <Route path="/gamestats">

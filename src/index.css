@@ -178,8 +178,15 @@
   transform: scale(1.1);
 }
 
-.over-container .ui.modal>.header {
+.ui.modal>.header p {
+  margin: 0;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
   text-align: center;
+  align-items: baseline;
 }
 
 .score-main {

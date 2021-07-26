@@ -12,7 +12,7 @@ const Player = ({addNewPlayer}) => {
                 playerID: uuidv4(), 
                 playerFName: playerFName, 
                 playerLName: playerLName,
-                batStat: 'NYB'
+                //batStat: 'NYB'
             }
         );
         clearFields();

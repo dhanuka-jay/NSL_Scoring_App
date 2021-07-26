@@ -39,7 +39,8 @@ const TeamSetup = ({playerList, addToTeam, teamA, teamB, setTeamName, removeFrom
 
     //Makes a option array from the 'PlayerList' for the dropdown while exluding already added players
     const availablePlayers = () => {
-        let plyrOptions = playerList.filter( player =>  !teamA.players.includes(player) )
+        let plyrOptions = playerList.filter( player => player.batStat !== 'OUT')
+            .filter( player =>  !teamA.players.includes(player) )
             .filter (player =>  !teamB.players.includes(player))
             .map((player) =>
              ({key: player.playerID, text: `${player.playerFName} ${player.playerLName}`, value: player.playerID})

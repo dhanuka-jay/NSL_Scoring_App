@@ -1,11 +1,12 @@
 
-import { useState, useEffect, useRef } from "react";
-import { Button, Dropdown, Modal, Segment, Divider, Label, Icon } from "semantic-ui-react";
+import { useState, useEffect } from "react";
+import { Button, Dropdown, Modal, Header, Segment, Divider, Label, Icon } from "semantic-ui-react";
 import BallButton from "./BallButton";
 
-const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
+const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) => {
     const [open, setOpen] = useState(false);
     const [isBatStatOpen, setIsBatStatOpen] = useState(false);
+    const [outConfirm, setOutConfirm] = useState(false);
     const [scoreType, setScoreType] = useState('');
     const [runs, setRuns] = useState();
     const [over, setOver] = useState([]);
@@ -15,7 +16,8 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
     const [notReady, setNotReady] = useState(true);
     const [currOver, setCurrOver] = useState(0);
     const [currBall, setCurrBall] = useState(1);
-    const [currBatsman, setCurrBatsman] = useState();
+    const [currBatsman, setCurrBatsman] = useState('');
+    const [nextBatsman, setNextBatsman] = useState('');
 
     const ballsOfTheOver = [1,2,3,4,5,6];
 
@@ -85,23 +87,45 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
         return bowlingPlayers;
     }
 
+    useEffect(() => {        
+        if(batsman1){
+            setCurrBatsman(batsman1)
+        }
+        if(batsman2){
+            setNextBatsman(batsman2)
+        }
+    },[batsman1, batsman2])
+
+
+    // useEffect(() => {
+    //     if(runs >= 0){
+    //         console.log('hh')
+    //         getScoreForBatsman();  
+    //         setCurrentBattingPlayer(); 
+    //     }
+    // }, [runs, scoreType])
+
 
     useEffect(() => {
         if(over.length == 6) {
             setOverList([...overList, {overNumber: currOver, bowler: bowler, over:over}]);
             setOver([]);
-        }
 
-        getScoreForBatsman();        
+            // Change the Current Batsman after the last ball of the over.
+            setCurrBatsman(nextBatsman);    
+            setNextBatsman(currBatsman);
+            setBowler('');
+        }            
     }, [over])
 
     const handleScore = () => {
         setOver([...over, {ballNum: currBall, scoreType: scoreType, runs: runs, batsman: currBatsman}]);
+        setCurrentBattingPlayer();
 
         // Zero-out ball
         setRuns();
         setScoreType('');
-        setCurrBatsman();
+        //setCurrBatsman();
 
         setNotReady(true);
         setOpen(false);
@@ -121,11 +145,9 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
 
     /* 
         getScoreForBatsman() => Return the current score of the batsman
-        Param : 'batsman' => batsmanID
+        Param : 'whoIsTheBatsman' => batsmanID
     */
-    const getScoreForBatsman = () => {
-        //console.log(batsman);
-
+    const getScoreForBatsman = (whoIsTheBatsman) => {
         // upToLastOverScore => Total score up to the Last Ended Over.
         let upToLastOverScore = 0;
 
@@ -134,22 +156,82 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
 
         if(overList.length > 0){
             overList.forEach((overFromList) => {
-                upToLastOverScore = overFromList.over.reduce((prevOverTotal, ball) => {
+                upToLastOverScore = overFromList.over
+                    .filter(ball => {
+                        return ball.batsman === whoIsTheBatsman
+                    })
+                    .reduce((prevOverTotal, ball) => {
                     return prevOverTotal + ball.runs
                 }, upToLastOverScore)
             })            
         }
 
         if(over.length > 0){
-            thisOverScore = over.reduce((overTotal, ball) => {
+            thisOverScore = over
+            .filter(ball => {
+                return ball.batsman === whoIsTheBatsman
+            })
+            .reduce((overTotal, ball) => {
                 return overTotal + ball.runs
             }, 0)
         } 
 
-        console.log(`last Tot: ${upToLastOverScore}`)
-
-        console.log(`this Over: ${thisOverScore}`);
+        return upToLastOverScore + thisOverScore;
     }
+
+
+    /* 
+        getBowlerDetails() => Return the current score of the batsman
+        Param : 'whoIsTheBowler' => bowlerID
+    */
+    const getBowlerDetails = (whoIsTheBowler) => {
+        //console.log(whoIsTheBowler)
+        let overCount = 0;
+        overList.forEach(overFromList => overFromList.bowler === whoIsTheBowler ? overCount = overCount + 1 : overCount)
+
+        return overCount;
+    }
+
+
+/*
+    f(): currentBattingPlayerSelect() => To automaticatlly decides which batsman(out of batsman1 and batsman2) is batting.
+    pi: run => runs scored in this ball
+        extra? => wheather it's an extra run
+    pr: currentBatsman at the crease
+*/
+    const setCurrentBattingPlayer = () => {
+        switch(runs) {
+            case 1:
+                setCurrBatsman(nextBatsman)
+                setNextBatsman(currBatsman)
+                break;
+            case 3:
+                setCurrBatsman(nextBatsman)
+                setNextBatsman(currBatsman)
+                break;
+            case 5:
+                setCurrBatsman(nextBatsman)
+                setNextBatsman(currBatsman) 
+                break;
+            case 7:
+                setCurrBatsman(nextBatsman)
+                setNextBatsman(currBatsman)
+                break;      
+        }
+    }
+
+
+/*
+    f(): getPlayerDetails() => To get Player Name.
+    p: playerID
+    r: currentBatsman's name (first & last)
+*/
+    const getPlayerDetails = (playerID) => {
+        const reqPlayer = clubPlayers.find( p =>  playerID === p.playerID)
+        //console.log(reqPlayer)
+        return `${reqPlayer.playerFName} ${reqPlayer.playerLName}`;
+    }
+
 
     return (
         <div className="over-container">
@@ -168,7 +250,7 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
                                     }
                                 }
                             >
-                                Score
+                                {`${getScoreForBatsman(batsman1)}`}
                             </Label>  
                             : ''}                
                             <Dropdown
@@ -195,13 +277,14 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
                                     }
                                 }
                             >
-                                Score
+                                {`${getScoreForBatsman(batsman2)}`}
                             </Label>
                             : ''}
                             <Dropdown
                                 fluid
                                 button
                                 clearable
+                                disabled={over.length > 0? true : false}
                                 placeholder='Select Batsman 2'                
                                 options={getBattingPlayers(2)}
                                 value={batsman2}
@@ -215,7 +298,7 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
                     <Segment>
                         {bowler ?
                         <Label size='huge' color='green' floating>
-                                Score
+                                {`${getBowlerDetails(bowler)}`}
                         </Label>
                         : ''}
                         <Dropdown
@@ -252,21 +335,33 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
             </div>
 
             <Modal
-                size='tiny'
-                open={false}
-                closeOnDimmerClick={false}
-            >
-                <Modal.Header>Select Batting Team</Modal.Header>
-                <Modal.Content>
-                    <Segment textAlign='center'>  
-                    <Dropdown 
-                        options={runOptions} 
-                        selection 
-                        placeholder="Select Batting Team"
-                    />
-                    </Segment>
-                </Modal.Content>
-
+                basic
+                onClose={() => setOutConfirm(false)}
+                onOpen={() => setOutConfirm(true)}
+                open={outConfirm}
+                size='small'
+                >
+                <Header icon>
+                    <Icon name='hand pointer outline' />
+                    <h1>OUT, Please Confirm !</h1>
+                    <h3>Is {currBatsman ? getPlayerDetails(currBatsman) : ''} out ?</h3>
+                </Header>
+                <Modal.Actions>
+                    <Button basic color='green' inverted onClick={() => setOutConfirm(false)}>
+                    <Icon name='remove' /> No
+                    </Button>
+                    <Button 
+                        color='red' 
+                        inverted 
+                        onClick={() => {
+                            setOutConfirm(false);
+                            setPlayerOut(currBatsman);
+                            setOpen(false);
+                            setCurrBatsman('')
+                        }}>
+                        <Icon name='checkmark' /> Yes
+                    </Button>
+                </Modal.Actions>
             </Modal>
                         
             <Modal
@@ -280,9 +375,23 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
                 }
                 closeOnDimmerClick={true}
             >
-                <Modal.Header>Let's Record this Delivery</Modal.Header>
+                <Modal.Header>
+                    <div className="modal-header">
+                        <p>Let's Record this Delivery</p>
+                        <Button 
+                            size='big' 
+                            negative 
+                            icon 
+                            labelPosition='right'
+                            onClick={() => setOutConfirm(true)}
+                        >
+                            <Icon name='hand pointer outline'/>
+                            OUT
+                        </Button>  
+                    </div> 
+                </Modal.Header>
                 <Modal.Content>
-                    <Segment textAlign='center'>                        
+                    <Segment textAlign='center'>                                             
                         <Divider horizontal>Runs</Divider>
                         <div className="score-container">
                             <Dropdown 
@@ -312,6 +421,7 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList}) => {
                                 selection 
                                 clearable
                                 placeholder="Select Batsman"
+                                value={currBatsman}
                                 onChange={(e, {value}) => setCurrBatsman(value)}
                             />
                         </div>
