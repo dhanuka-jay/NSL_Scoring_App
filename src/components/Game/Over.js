@@ -88,11 +88,17 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
     }
 
     useEffect(() => {        
-        if(batsman1){
+        if(!currBatsman && !nextBatsman){
             setCurrBatsman(batsman1)
         }
-        if(batsman2){
+        if(currBatsman && !nextBatsman){
             setNextBatsman(batsman2)
+        }
+        if(!currBatsman && (batsman2 === nextBatsman)){
+            setCurrBatsman(batsman1)
+        }
+        if(!currBatsman && (batsman1 === nextBatsman)){
+            setCurrBatsman(batsman2)
         }
     },[batsman1, batsman2])
 
@@ -233,6 +239,18 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
     }
 
 
+    const loadPreviousDelivery = (deliveryOfTheOver) => {
+        console.log(deliveryOfTheOver)
+
+        over.forEach(ball => {
+            if(ball.ballNum === deliveryOfTheOver){
+                setRuns(ball.runs);
+                setScoreType(ball.scoreType);
+            }
+        })
+    }
+
+
     return (
         <div className="over-container">
             <div className="teamPlayers-container">
@@ -284,7 +302,6 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
                                 fluid
                                 button
                                 clearable
-                                disabled={over.length > 0? true : false}
                                 placeholder='Select Batsman 2'                
                                 options={getBattingPlayers(2)}
                                 value={batsman2}
@@ -325,6 +342,7 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
                                         key={val}
                                         ball={val}
                                         currBall={currBall}
+                                        loadPreviousDelivery={loadPreviousDelivery}
                                         setCurrBall={setCurrBall}
                                         setOpen={setOpen}
                                     /> 
@@ -332,45 +350,21 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
                     :
                         ''
                 }
-            </div>
+            </div>            
 
-            <Modal
-                basic
-                onClose={() => setOutConfirm(false)}
-                onOpen={() => setOutConfirm(true)}
-                open={outConfirm}
-                size='small'
-                >
-                <Header icon>
-                    <Icon name='hand pointer outline' />
-                    <h1>OUT, Please Confirm !</h1>
-                    <h3>Is {currBatsman ? getPlayerDetails(currBatsman) : ''} out ?</h3>
-                </Header>
-                <Modal.Actions>
-                    <Button basic color='green' inverted onClick={() => setOutConfirm(false)}>
-                    <Icon name='remove' /> No
-                    </Button>
-                    <Button 
-                        color='red' 
-                        inverted 
-                        onClick={() => {
-                            setOutConfirm(false);
-                            setPlayerOut(currBatsman);
-                            setOpen(false);
-                            setCurrBatsman('')
-                        }}>
-                        <Icon name='checkmark' /> Yes
-                    </Button>
-                </Modal.Actions>
-            </Modal>
-                        
+{/* 
+    Modal => Score Recording Modal
+ */}
+
             <Modal
                 className="over-modal"
                 size="tiny"
                 open={open}
                 onClose={() => {
+                        setRuns();
+                        setScoreType('');
                         setOpen(false);
-                        setNotReady(true)
+                        setNotReady(true);
                     }
                 }
                 closeOnDimmerClick={true}
@@ -383,7 +377,10 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
                             negative 
                             icon 
                             labelPosition='right'
-                            onClick={() => setOutConfirm(true)}
+                            onClick={() => {                                
+                                setScoreType('OUT');
+                                setOutConfirm(true)
+                            }}
                         >
                             <Icon name='hand pointer outline'/>
                             OUT
@@ -398,6 +395,7 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
                                 options={runOptions} 
                                 selection 
                                 placeholder="Select Runs"
+                                value={runs}
                                 onChange={(e, {value}) => {
                                     setRuns(value);
                                     setNotReady(false);
@@ -411,6 +409,7 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
                                 selection 
                                 clearable
                                 placeholder="Select Score Type"
+                                value={scoreType}
                                 onChange={(e, {value}) => setScoreType(value)}
                             />
                         </div>
@@ -422,7 +421,11 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
                                 clearable
                                 placeholder="Select Batsman"
                                 value={currBatsman}
-                                onChange={(e, {value}) => setCurrBatsman(value)}
+                                onChange={(e, {value}) => {
+                                    setNextBatsman(currBatsman)
+                                    setCurrBatsman(value)
+                                
+                                }}
                             />
                         </div>
                         <Divider horizontal>Confirm</Divider>
@@ -435,6 +438,55 @@ const Over = ({teamA, teamB, overList, clubPlayers, setOverList, setPlayerOut}) 
                     </Segment>
                 </Modal.Content>
             </Modal>   
+
+{/* 
+    Modal => Out Control Modal
+ */}
+
+            <Modal
+                basic
+                onClose={() => {
+                    setOutConfirm(false)
+                    setScoreType('');
+                }}
+                onOpen={() => {
+                    setOutConfirm(true);
+                }}
+                open={outConfirm}
+                size='small'
+                >
+                <Header icon>
+                    <Icon name='hand pointer outline' />
+                    <h1>OUT, Please Confirm !</h1>
+                    <h3>Is {currBatsman ? getPlayerDetails(currBatsman) : ''} out ?</h3>
+                </Header>
+                <Modal.Actions>
+                    <Button 
+                        basic 
+                        color='green' 
+                        inverted 
+                        onClick={() => {
+                            setOutConfirm(false);
+                            setScoreType('');
+                        }}>
+                    <Icon name='remove' /> No
+                    </Button>
+                    <Button 
+                        color='red' 
+                        inverted 
+                        onClick={() => {
+                            handleScore();
+                            setOutConfirm(false);
+                            setPlayerOut(currBatsman);
+                            setOpen(false);
+                            setCurrBatsman('');
+                            currBatsman === batsman1 ? setBatsman1('') : setBatsman2('');                            
+                        }}>
+                        <Icon name='checkmark' /> Yes
+                    </Button>
+                </Modal.Actions>
+            </Modal>
+
             <Modal
                 size='mini'
                 open={isBatStatOpen}
